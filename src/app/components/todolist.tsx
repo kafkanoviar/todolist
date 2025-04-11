@@ -116,7 +116,7 @@ export default function TodoList() {
           onClick={addTask}
           className="bg-slate-500 text-white px-4 py-2 rounded"
         >
-          Tambah Tugas
+          Tambah Tugasss
         </button>
       </div>
       <ul>
