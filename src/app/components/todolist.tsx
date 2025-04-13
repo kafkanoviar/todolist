@@ -52,7 +52,7 @@ export default function TodoList() {
     const now = new Date().getTime();
     const difference = deadlineTime - now;
 
-    if (difference <= 0) return 'Waktu habis!';
+    if (difference <= 0) return '⛔ Waktu habis!';
 
     const hours = Math.floor(difference / (1000 * 60 * 60));
     const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
@@ -63,7 +63,7 @@ export default function TodoList() {
 
   const addTask = async (): Promise<void> => {
     const { value: formValues } = await Swal.fire({
-      title: 'Tambahkan tugas baru 🚀',
+      title: 'Tambahkan tugas baru 🖴',
       html:
         '<input id="swal-input1" class="swal2-input" placeholder="Nama tugas">' +
         '<input id="swal-input2" type="datetime-local" class="swal2-input">',
@@ -108,7 +108,7 @@ export default function TodoList() {
 
   const editTask = async (task: Task): Promise<void> => {
     const { value: formValues } = await Swal.fire({
-      title: 'Edit tugas 🚀',
+      title: 'Edit tugas ✎',
       html:
         `<input id="swal-input1" class="swal2-input" value="${task.text}" placeholder="Nama tugas">` +
         `<input id="swal-input2" type="datetime-local" class="swal2-input" value="${new Date(task.deadline).toISOString().slice(0, 16)}">`,
@@ -141,29 +141,33 @@ export default function TodoList() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-purple-900 to-blue-900 text-white p-4">
-      <div className="max-w-md mx-auto mt-10 p-6 bg-black bg-opacity-40 shadow-2xl rounded-xl backdrop-blur-md border border-purple-700">
-        <h1 className="text-3xl font-bold text-center mb-6 text-cyan-300 tracking-widest">
-          🚀 To-Do List Angkasa
+    <div
+      className="min-h-screen bg-[#d3d3c7] text-black font-mono p-4"
+      style={{ fontFamily: "'Press Start 2P', monospace" }}
+    >
+      <div className="max-w-lg mx-auto mt-10 p-6 bg-[#f2f2f2] border-4 border-black shadow-[6px_6px_0px_#000]">
+        <h1 className="text-sm text-center font-bold mb-4 uppercase tracking-widest text-black">
+          💾 TO-DO LIST RETRO 90S 💾
         </h1>
+
         <div className="flex justify-center mb-6">
           <button
             onClick={addTask}
-            className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-purple-600 hover:to-indigo-500 text-white font-bold py-2 px-6 rounded-full shadow-lg transition-all duration-300"
+            className="bg-yellow-300 text-black border-2 border-black px-4 py-2 font-bold hover:translate-x-[2px] hover:translate-y-[2px] active:translate-x-[4px] active:translate-y-[4px] transition-transform"
           >
-            + Tambah Tugas
+            ➕ Tambah Tugas
           </button>
         </div>
+
         <ul className="space-y-3">
           <AnimatePresence>
             {tasks.map((task) => {
-              const timeLeft = calculateTimeRemaining(task.deadline);
-              const isExpired = timeLeft === 'Waktu habis!';
-              const taskColor = task.completed
-                ? 'bg-green-700 bg-opacity-30'
-                : isExpired
-                ? 'bg-red-700 bg-opacity-30'
-                : 'bg-purple-700 bg-opacity-20';
+              const isExpired = timeRemaining[task.id] === '⛔ Waktu habis!';
+              const bg = isExpired
+                ? 'bg-red-200'
+                : task.completed
+                ? 'bg-green-200'
+                : 'bg-white';
 
               return (
                 <motion.li
@@ -172,42 +176,32 @@ export default function TodoList() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.4 }}
-                  className={`p-4 rounded-lg border border-purple-600 shadow-md ${taskColor}`}
+                  className={`p-4 border-2 border-black shadow-[3px_3px_0px_#000] ${bg} text-black text-xs`}
                 >
-                  <div className="flex justify-between items-center mb-1">
+                  <div className="flex justify-between items-center">
                     <span
                       onClick={() => toggleTask(task.id)}
-                      className={`cursor-pointer transition-all duration-300 ${
-                        task.completed
-                          ? 'line-through text-gray-400'
-                          : 'text-white font-semibold'
-                      }`}
+                      className={`cursor-pointer ${task.completed ? 'line-through text-gray-600' : 'font-bold'}`}
                     >
                       {task.text}
                     </span>
-                    <div className="flex items-center gap-2">
+                    <div className="flex gap-1">
                       <button
                         onClick={() => editTask(task)}
-                        className="text-sm bg-blue-600 hover:bg-blue-800 text-white px-3 py-1 rounded-full transition"
-                        title="Edit tugas"
+                        className="bg-blue-300 border border-black px-2 py-1 hover:bg-blue-400"
                       >
-                        🚀
+                        ✎
                       </button>
                       <button
                         onClick={() => deleteTask(task.id)}
-                        className="text-sm bg-red-600 hover:bg-red-800 text-white px-3 py-1 rounded-full transition"
-                        title="Hapus tugas"
+                        className="bg-red-300 border border-black px-2 py-1 hover:bg-red-400"
                       >
-                        ✖
+                        🗑️
                       </button>
                     </div>
                   </div>
-                  <p className="text-sm text-cyan-200">
-                    ⏰ {new Date(task.deadline).toLocaleString()}
-                  </p>
-                  <p className="text-xs text-indigo-300">
-                    ⌛ {timeRemaining[task.id] || 'Menghitung...'}
-                  </p>
+                  <p className="mt-2">🕒 {new Date(task.deadline).toLocaleString()}</p>
+                  <p className="text-gray-800">⏳ {timeRemaining[task.id] || '...'}</p>
                 </motion.li>
               );
             })}
